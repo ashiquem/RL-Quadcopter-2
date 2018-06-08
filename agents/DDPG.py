@@ -1,7 +1,7 @@
-from actor import Actor
-from critic import Critic
+from agents.actor import Actor
+from agents.critic import Critic
 from ReplayBuffer import ReplayBuffer
-from ounoise import OUNoise
+from agents.ounoise import OUNoise
 import numpy as np
 
 class DDPG():
@@ -9,7 +9,7 @@ class DDPG():
 
     def __init__(self,task):
         """Initialize models"""
-
+        self.env = task
         self.state_size = task.state_size
         self.action_size = task.action_size
         self.action_high = task.action_high
@@ -42,7 +42,7 @@ class DDPG():
 
          # Algorithm parameters
         self.gamma = 0.99  # discount factor
-        self.tau = 0.01  # for soft update of target parameters
+        self.tau = 0.001  # for soft update of target parameters
 
     def reset_episode(self,task):
         """Return state after reseting task"""
@@ -102,6 +102,19 @@ class DDPG():
 
         new_weights = self.tau*local_weights + (1-self.tau)*target_weights
         target_model.set_weights(new_weights)
+
+    def save_model(self,path):
+        self.actor_local.model.save_weights(path)
+
+    def load_model(self,path):
+        self.actor_local.model.load_weights(path)
+
+    def act_only(self,state):
+        state = np.reshape(state,[-1,self.state_size])
+        action = self.actor_local.model.predict(state)[0]
+        return list(action)
+
+        
 
 
     

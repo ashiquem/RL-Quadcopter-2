@@ -32,13 +32,15 @@ class Actor():
 
         # Define hidden layers
 
-        net = layers.Dense(units =32,activation='relu')(states)
-        net = layers.Dense(units=64,activation='relu')(net)
-        net = layers.Dense(units=32,activation='relu')(net)
+        net = layers.Dense(units=64)(states)
+        net = layers.BatchNormalization()(net)
+        net = layers.Activation("relu")(net)
+        net = layers.Dense(units=128,activation="relu")(net)
+
 
         # Define output layers
         raw_actions = layers.Dense(units=self.action_size,activation='sigmoid',
-            name='raw_actions')(net)
+            name='raw_actions',kernel_initializer=layers.initializers.RandomUniform(minval=-0.003, maxval=0.003))(net)
 
         # Scale raw actions to action space range
 
@@ -55,7 +57,7 @@ class Actor():
         loss = K.mean(-action_gradients*actions)
 
         # Define optimizers
-        optimizer = optimizers.Adam()
+        optimizer = optimizers.Adam(lr = 0.001)
         updates_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
 
         
