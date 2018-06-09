@@ -41,7 +41,7 @@ class DDPG():
         self.memory = ReplayBuffer(self.buffer_size,self.batch_size)
 
          # Algorithm parameters
-        self.gamma = 0.99  # discount factor
+        self.gamma = 0.9  # discount factor
         self.tau = 0.001  # for soft update of target parameters
 
     def reset_episode(self,task):
@@ -72,11 +72,11 @@ class DDPG():
     def learn(self,experiences):
         # Convert experience tuples to separate arrays for each element
 
-        states = np.vstack([e.state for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.state_size)
-        actions = np.array([e.action for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.action_size) 
-        next_states = np.vstack([e.next_state for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.state_size)
-        rewards = np.array([e.reward for e in experiences if e is not None]).astype(np.float32).reshape(-1,1)
-        dones = np.array([e.done for e in experiences if e is not None]).astype(np.uint8).reshape(-1,1)
+        states = np.vstack([e.state for e in experiences if e is not None])
+        actions = np.array([e.action for e in experiences if e is not None]).astype(np.float32).reshape(-1, self.action_size)
+        rewards = np.array([e.reward for e in experiences if e is not None]).astype(np.float32).reshape(-1, 1)
+        dones = np.array([e.done for e in experiences if e is not None]).astype(np.uint8).reshape(-1, 1)
+        next_states = np.vstack([e.next_state for e in experiences if e is not None])
 
         # Get predicted next-state actions and Q values from target models
         #     Q_targets_next = critic_target(next_state, actor_target(next_state))

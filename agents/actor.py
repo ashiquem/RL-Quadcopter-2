@@ -32,16 +32,15 @@ class Actor():
 
         # Define hidden layers
 
-        net = layers.Dense(units=64)(states)
-        net = layers.BatchNormalization()(net)
-        net = layers.Activation("relu")(net)
-        net = layers.Dense(units=128,activation="relu")(net)
-
+        net = layers.Dense(units=32, activation='relu')(states)
+        net = layers.Dense(units=64, activation='relu')(net)
+        net = layers.Dense(units=128, activation='relu')(net)    
+        #,kernel_initializer=layers.initializers.VarianceScaling()
 
         # Define output layers
         raw_actions = layers.Dense(units=self.action_size,activation='sigmoid',
             name='raw_actions',kernel_initializer=layers.initializers.RandomUniform(minval=-0.003, maxval=0.003))(net)
-
+        # ,kernel_initializer=layers.initializers.RandomUniform(minval=-0.003, maxval=0.003)
         # Scale raw actions to action space range
 
         actions = layers.Lambda(lambda x: (x*self.action_range)+self.action_low,
